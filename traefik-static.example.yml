@@ -1,0 +1,27 @@
+# Example Traefik v3 STATIC configuration that registers the plugin.
+# (Static config is loaded once at startup — this is where plugins are declared.)
+
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic-config.yml
+
+# ---- Plugin registration ----
+experimental:
+  plugins:
+    # This name ("ipblock") is the key referenced under middlewares.<name>.plugin
+    # in the dynamic config.
+    ipblock:
+      moduleName: github.com/ip-block/traefik-ipblock
+      version: v1.0.0   # a published git tag of the plugin repo
+
+# For LOCAL development without publishing, use localPlugins instead:
+# experimental:
+#   localPlugins:
+#     ipblock:
+#       moduleName: github.com/ip-block/traefik-ipblock
+#   # and place the plugin source at:
+#   #   ./plugins-local/src/github.com/ip-block/traefik-ipblock/

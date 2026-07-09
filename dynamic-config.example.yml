@@ -1,0 +1,40 @@
+# Example Traefik v3 DYNAMIC configuration using the ip-block middleware.
+# (This is dynamic config — the middleware definition + a router that uses it.)
+
+http:
+  routers:
+    my-app:
+      rule: Host(`example.com`)
+      entryPoints:
+        - web
+      middlewares:
+        - ip-block
+      service: my-app-svc
+
+  middlewares:
+    ip-block:
+      plugin:
+        # The key here must match the plugin name declared in the STATIC config
+        # (see traefik-static.example.yml).
+        ipblock:
+          enabled: true
+          siteId: your-site-id
+          apiKey: your-api-key
+          apiUrl: https://api.ip-block.com/v1/check
+          failOpen: true
+          cacheTtl: 300
+          timeoutMs: 1000
+          behindProxy: false
+          realIpHeader: X-Forwarded-For
+          blockAction: "403"            # "403" or "redirect"
+          blockRedirectUrl: https://www.ip-block.com/blocked.php
+          blockMessage: Access denied.
+          whitelist:
+            - 127.0.0.1
+            - ::1
+
+  services:
+    my-app-svc:
+      loadBalancer:
+        servers:
+          - url: http://127.0.0.1:8080

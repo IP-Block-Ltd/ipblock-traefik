@@ -1,0 +1,27 @@
+# Traefik plugin manifest. Required for Traefik to discover and load the plugin.
+displayName: IP Block
+type: middleware
+# import path must match your go.mod module path.
+import: github.com/ip-block/traefik-ipblock
+
+summary: >-
+  Blocks requests by consulting the ip-block.com decision API. Caches per-IP
+  decisions, fails open on error, and supports a whitelist.
+
+# testData is used by `traefik plugins` tooling and shown as an example.
+testData:
+  enabled: true
+  siteId: your-site-id
+  apiKey: your-api-key
+  apiUrl: https://api.ip-block.com/v1/check
+  failOpen: true
+  cacheTtl: 300
+  timeoutMs: 1000
+  behindProxy: false
+  realIpHeader: X-Forwarded-For
+  blockAction: "403"
+  blockRedirectUrl: https://www.ip-block.com/blocked.php
+  blockMessage: Access denied.
+  whitelist:
+    - 127.0.0.1
+    - ::1
